@@ -256,7 +256,10 @@ tagsInput.directive('tagsInput', function($timeout, $document, $window, $q, tags
             };
 
             focusInput = function() {
-                $timeout(function() { input[0].focus(); });
+                if (!scope.readonly) {
+                    input = element.find('input');
+                    $timeout(function() { input[0].focus(); });
+                }
             };
 
             ngModelCtrl.$isEmpty = function(value) {
@@ -301,7 +304,9 @@ tagsInput.directive('tagsInput', function($timeout, $document, $window, $q, tags
             attrs.$observe('disabled', function(value) {
                 scope.disabled = value;
             });
-
+            attrs.$observe('readonly', function(value) {
+                scope.readonly = value;
+            });
             scope.eventHandlers = {
                 input: {
                     keydown: function($event) {
@@ -337,7 +342,7 @@ tagsInput.directive('tagsInput', function($timeout, $document, $window, $q, tags
                 },
                 host: {
                     click: function() {
-                        if (scope.disabled) {
+                        if (scope.disabled || scope.readonly) {
                             return;
                         }
                         focusInput();
